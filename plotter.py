@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import sys
+
+from numpy.lib.function_base import median
 from txtToCsv import listify
 
 
@@ -10,12 +12,13 @@ subSets = ['ours', 'notours']
 
 interval = 0.5
 
-namesToSubN = {'adrian': 0, 'andrew': 11, 'bree': 2, 'fran': 12, 'hanna': 9, 'issy': 5, 'jack': 6,
-               'killian': 7, 'sophie': 8, 'thomas': 4, 'tristan': 10, 'vedh': 1, 'will': 3, 'zoe': 13}
+# namesToSubN = {'adrian': 0, 'andrew': 11, 'bree': 2, 'fran': 12, 'hanna': 9, 'issy': 5, 'jack': 6,
+#                'killian': 7, 'sophie': 8, 'thomas': 4, 'tristan': 10, 'vedh': 1, 'will': 3, 'zoe': 13}
 
 
-def plotStu(stu):
-    medians = []
+def getStudentData(stu):
+    out = {'name': stu, 'ours': [], 'notours': [], 'medians': [],
+           'median': 'Not enough data for median'}
     for s in subSets:
         for g in groups:
             fileN = f'./{g}/{s}/{stu}.txt'
@@ -23,38 +26,61 @@ def plotStu(stu):
                 data = listify(fileN)
                 data = [float(x[1]) for x in data]
 
-                plt.plot(np.arange(0, len(data)*interval, interval), data)
+                out[s] = data
+
                 sData = sorted(data)
                 median = sData[len(sData)//2]
-                medians.append(median)
-                # plt.plot(data.index(median), median, 'o')
+                out['medians'].append(median)
 
     try:
-        print(medians)
-        print((medians[0]-medians[1])/medians[0])
+        out['median'] = (out['medians'][0]-out['medians'][1])/out['medians'][0]
     except:
         pass
+    return out
+
+
+def plotStu(stu):
+    data = getStudentData(stu)
+    # medians = data['medians']
+
+    for s in subSets:
+        plt.plot(np.arange(0, len(data[s])*interval, interval), data[s])
+    print(data['medians'])
 
     plt.xlabel('Seconds')
     plt.ylabel('Resistance')
     try:
-        plt.title(f'Subject {namesToSubN[stu]}')
+        pass
+        # plt.title(f'Subject {namesToSubN[stu]}')
     except:
         plt.title(f'Subject {stu}')
     plt.legend(['Comfort Crutch',
                'Control'])
-    # plt.legend(['Comfort Crutch', 'Comfort Crutch Median',
-    #    'Control', 'Control Median'])
-
     plt.ylim(-1, 120)
 
 
-# students = []
-# for g in groups:
-#     students += [x.split('.')[0]
-#                  for x in os.listdir(f'./{g}/{subSets[0]}')]
-# students.sort()
-# print({x: i for i, x in enumerate(students)})
+def plotMedians():
+    students = []
+    for g in groups:
+        students += [x.split('.')[0]
+                     for x in os.listdir(f'./{g}/{subSets[0]}')]
+    students.sort()
+
+    sData = []
+    for stu in students:
+        stuD = getStudentData(stu)
+        sData.append(stuD)
+
+    sData.sort(key=lambda x: -float('inf')
+               if type(x['median']) is str else x['median'], reverse=True)
+    for i, s in enumerate(sData):
+        print(s['median'], s['name'])
+        if type(s['median']) is not str:
+            plt.plot(i, s['median'], 'ro')
+
+    plt.ylim(-1, 1)
+    # print({x: i for i, x in enumerate(students)})
+
 
 stu = sys.argv[1]
 plotStu(stu)
