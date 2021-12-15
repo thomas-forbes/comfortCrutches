@@ -1,6 +1,6 @@
 //#include <SD.h>
 //#include <SPI.h>
-//File myFile;
+// File myFile;
 const int OhmMeter = 0;
 const int R3 = 6;
 const int R2 = 5;
@@ -81,28 +81,28 @@ void calculate_resistor() {
 }
 void setup() {
     Serial.begin(9600);
-    while (!Serial) {
-        ;
-    }
-    if (!SD.begin(10)) {
-        while (1)
-            ;
-    }
+    //    while (!Serial) {
+    //        ;
+    //    }
+    //    if (!SD.begin(10)) {
+    //        while (1)
+    //            ;
+    //    }
     // We don't need the sd card anymore
-//    myFile = SD.open("test.csv", FILE_WRITE);
-//    if (myFile) {
-//        Serial.println("working");
-//    } else {
-//        Serial.println("SD Card failure");
-//    }
+    //    myFile = SD.open("test.csv", FILE_WRITE);
+    //    if (myFile) {
+    //        Serial.println("working");
+    //    } else {
+    //        Serial.println("SD Card failure");
+    //    }
 }
 int iter = 0;
 void loop() {
     calculate_resistor();
-//    myFile = SD.open("test.csv", FILE_WRITE);
+    //    myFile = SD.open("test.csv", FILE_WRITE);
     Serial.println("_________________________________________");
-//    myFile.println(String(iter) + "," + String(R));
-//    myFile.close();
+    //    myFile.println(String(iter) + "," + String(R));
+    //    myFile.close();
     iter++;
 
     delay(500);
