@@ -5,7 +5,7 @@ import sys
 from txtToCsv import listify
 
 
-groups = ['bio', 'chem', 'thomasHouse', 'tuesday', 'thursday']
+groups = ['bio', 'chem', 'thomasHouse', 'tuesday', 'vedhBeingAnnoying', 'thursday']
 subSets = ['ours', 'notours']
 
 interval = 0.5
