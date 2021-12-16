@@ -2,8 +2,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import sys
-
-from numpy.lib.function_base import median
 from txtToCsv import listify
 
 
@@ -45,15 +43,11 @@ def plotStu(stu):
 
     for s in subSets:
         plt.plot(np.arange(0, len(data[s])*interval, interval), data[s])
-    print(data['medians'])
+    print(data['medians'], '\n', data['median'])
 
     plt.xlabel('Seconds')
     plt.ylabel('Resistance')
-    try:
-        pass
-        # plt.title(f'Subject {namesToSubN[stu]}')
-    except:
-        plt.title(f'Subject {stu}')
+    plt.title(f'Subject {stu}')
     plt.legend(['Comfort Crutch',
                'Control'])
     plt.ylim(-1, 120)
