@@ -6,7 +6,7 @@ from txtToCsv import listify
 
 
 # groups = ['bio', 'chem', 'thomasHouse', 'tuesday', 'vedhBeingAnnoying', 'thursday']
-groups = ['mondayAfterBreak']
+groups = ['monday3']
 subSets = ['ours', 'notours']
 
 interval = 0.5
