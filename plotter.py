@@ -27,7 +27,7 @@ students.sort()
 Connor: we did him again and different results after making the positioning better.
 August + Ruby: We did them before we noticed the positioning better and improved our instructions.
 """
-ignoredStudents = ['august', 'connor', 'ruby']
+ignoredStudents = ['august', 'connor', 'ruby']  # , 'maisieT', 'liamH', 'zoe']
 students = [s for s in students if s not in ignoredStudents]
 
 
@@ -102,21 +102,25 @@ def plotStu(stu):
 
 
 # Plots the medians of each student and a line of the
-def plotMedians():
+def plotPercentages():
     sData = getStudentsData()
     sData.sort(key=lambda x: -float('inf')
                if type(x['percentDiff']) is str else x['percentDiff'], reverse=True)
 
-    meds = []
+    percents = []
     for i, s in enumerate(sData):
         logger.debug(f"{s['percentDiff']}, {s['name']}")
         if type(s['percentDiff']) is not str:
             plt.plot(i, s['percentDiff'], 'ro')
-            meds.append(s['percentDiff'])
-    avgMed = sum(meds) / len(meds)
-    logger.info(avgMed)
-    plt.plot(range(len(meds)), [avgMed] * len(meds), lw=3)
+            percents.append(s['percentDiff'])
 
+    meanPerc = sum(percents) / len(percents)
+    medianPerc = percents[len(percents)//2]
+    logger.info(f'mean:{meanPerc}')
+    logger.info(f'median:{medianPerc}')
+
+    plt.plot(range(len(percents)), [meanPerc] * len(percents), lw=3)
+    plt.plot(range(len(percents)), [medianPerc] * len(percents), lw=3)
     plt.ylim(-1, 1)
 
 
@@ -125,8 +129,8 @@ parser = OptionParser()
 parser.add_option('-n', dest='useN', default=False,
                   action='store_true', help='use newtons')
 parser.add_option('-s', dest='stu', help='Name of student')
-parser.add_option('-m', dest='doMedians', default=False,
-                  action='store_true', help='Plot medians instead')
+parser.add_option('-m', dest='doPerc', default=False,
+                  action='store_true', help='Plot percentages including mean, median instead')
 parser.add_option('-P', dest='doPlot', default=True,
                   action='store_false', help='Do not show plot')
 
@@ -136,8 +140,8 @@ stu = options.stu
 USE_NEWTONS = options.useN
 
 # Run funcs
-if options.doMedians:
-    plotMedians()
+if options.doPerc:
+    plotPercentages()
 elif stu in students:
     plotStu(stu)
 else:
