@@ -6,6 +6,10 @@ import os
 from optparse import OptionParser
 from txtToCsv import listify
 
+# Setup logging
+logging.basicConfig()
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 groups = ['tuesday']
 subSets = ['ours', 'notours']
@@ -18,10 +22,31 @@ for g in groups:
                  for x in os.listdir(f'./{g}/{subSets[0]}')]
 students.sort()
 
+# Ignored Reasons
+"""
+Connor: we did him again and different results after making the positioning better.
+August + Ruby: We did them before we noticed the positioning better and improved our instructions.
+"""
+ignoredStudents = ['august', 'connor', 'ruby']
+students = [s for s in students if s not in ignoredStudents]
+
+
+def convertToN(data):
+    if USE_NEWTONS:
+        ohms = np.array([120, 108, 95, 83, 70.5, 58.1,
+                         45.7, 33.3, 20.9, 8.5, -3.9])
+        kg = np.array([1.5, 2.5, 3.5, 4.5, 5.5, 6.5,
+                       7.5, 8.5, 9.5, 10.5, 11.5])
+
+        a, b = np.polyfit(ohms, kg, 1)
+        return [a*x+b for x in data]
+    else:
+        return data
+
 
 def getStudentData(stu):
     out = {'name': stu, 'ours': [], 'notours': [], 'medians': [],
-           'median': 'Not enough data for median'}
+           'percentDiff': 'Not enough data for median'}
     for s in subSets:
         for g in groups:
             fileN = f'./{g}/{s}/{stu}.txt'
@@ -29,7 +54,9 @@ def getStudentData(stu):
                 data = listify(fileN)
                 data = [float(x[1]) for x in data]
 
-                logging.debug(data)
+                # logger.debug(data)
+                # Doesn't convert if USE_NEWTONS is false
+                data = convertToN(data)
                 out[s] = data
 
                 sData = sorted(data)
@@ -37,7 +64,8 @@ def getStudentData(stu):
                 out['medians'].append(median)
 
     try:
-        out['median'] = (out['medians'][0]-out['medians'][1])/out['medians'][0]
+        out['percentDiff'] = (
+            out['medians'][0]-out['medians'][1])/out['medians'][0]
     except:
         pass
     return out
@@ -57,36 +85,40 @@ def plotStu(stu):
 
     for s in subSets:
         plt.plot(np.arange(0, len(data[s])*interval, interval), data[s])
-    logging.info(data['medians'])
-    logging.info(data['median'])
+    logger.info(data['medians'])
+    logger.info(data['percentDiff'])
 
     plt.xlabel('Seconds')
-    plt.ylabel('Resistance')
     plt.title(f'Subject {stu}')
     plt.legend(['Comfort Crutch',
-               'Control'])
-    plt.ylim(-1, 120)
+                'Control'])
+
+    if USE_NEWTONS:
+        plt.ylabel('Newtons')
+        # plt.ylim(-1, convertToN([120])[0])
+    else:
+        plt.ylabel('Resistance')
+        plt.ylim(-1, 120)
 
 
 # Plots the medians of each student and a line of the
 def plotMedians():
     sData = getStudentsData()
     sData.sort(key=lambda x: -float('inf')
-               if type(x['median']) is str else x['median'], reverse=True)
+               if type(x['percentDiff']) is str else x['percentDiff'], reverse=True)
 
     meds = []
     for i, s in enumerate(sData):
-        logging.debug(s['median'], s['name'])
-        if type(s['median']) is not str:
-            plt.plot(i, s['median'], 'ro')
-            meds.append(s['median'])
-    plt.plot(range(len(meds)), [sum(meds) / len(meds)] * len(meds), lw=3)
+        logger.debug(f"{s['percentDiff']}, {s['name']}")
+        if type(s['percentDiff']) is not str:
+            plt.plot(i, s['percentDiff'], 'ro')
+            meds.append(s['percentDiff'])
+    avgMed = sum(meds) / len(meds)
+    logger.info(avgMed)
+    plt.plot(range(len(meds)), [avgMed] * len(meds), lw=3)
 
     plt.ylim(-1, 1)
 
-
-# Setup logging
-logging.basicConfig(level=logging.INFO)
 
 # Setup Arg options
 parser = OptionParser()
