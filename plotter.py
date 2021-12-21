@@ -39,7 +39,7 @@ def convertToN(data):
                        7.5, 8.5, 9.5, 10.5, 11.5])
 
         a, b = np.polyfit(ohms, kg, 1)
-        return [a*x+b for x in data]
+        return [(a*x+b)*9.8 for x in data]
     else:
         return data
 
