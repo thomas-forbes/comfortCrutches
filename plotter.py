@@ -31,16 +31,22 @@ students = [s for s in students if s not in ignoredStudents]
 
 
 def convertToN(data):
-    if USE_NEWTONS:
-        ohms = np.array([120, 108, 95, 83, 70.5, 58.1,
-                         45.7, 33.3, 20.9, 8.5, -3.9])
-        kg = np.array([1.5, 2.5, 3.5, 4.5, 5.5, 6.5,
-                       7.5, 8.5, 9.5, 10.5, 11.5])
+    ohms = np.array([120, 108, 95, 83, 70.5, 58.1,
+                     45.7, 33.3, 20.9, 8.5, -3.9])
+    kg = np.array([1.5, 2.5, 3.5, 4.5, 5.5, 6.5,
+                   7.5, 8.5, 9.5, 10.5, 11.5])
 
-        a, b = np.polyfit(ohms, kg, 1)
-        return [(a*x+b)*9.8 for x in data]
+    a, b = np.polyfit(ohms, kg, 1)
+    zNinOhms = -b/a  # Zero Newtons in ohms
+    if USE_NEWTONS:
+        return [(a*x+b)*9.8 for x in data if x > -1 and x < zNinOhms]
     else:
-        return data
+        return [x for x in data if x > -1 and x < zNinOhms]
+
+
+# USE_NEWTONS = True
+# print(convertToN([24.87, 12.96]))
+# exit(0)
 
 
 def getStudentData(stu):
@@ -63,8 +69,12 @@ def getStudentData(stu):
                 out['medians'].append(median)
 
     try:
-        out['percentDiff'] = (
-            out['medians'][0]-out['medians'][1])/out['medians'][0]
+        if USE_NEWTONS:
+            out['percentDiff'] = (
+                out['medians'][1]-out['medians'][0])/out['medians'][1]
+        else:
+            out['percentDiff'] = (
+                out['medians'][0]-out['medians'][1])/out['medians'][0]
     except:
         pass
     return out
@@ -94,33 +104,41 @@ def plotStu(stu):
 
     if USE_NEWTONS:
         plt.ylabel('Newtons')
-        # plt.ylim(-1, convertToN([120])[0])
+        plt.ylim(-1, convertToN([0])[0])
     else:
         plt.ylabel('Resistance')
         plt.ylim(-1, 120)
 
 
 # Plots the medians of each student and a line of the
-def plotPercentages():
+def plotDifferences(doPerc):
     sData = getStudentsData()
-    sData.sort(key=lambda x: -float('inf')
-               if type(x['percentDiff']) is str else x['percentDiff'], reverse=True)
 
-    percents = []
-    for i, s in enumerate(sData):
-        logger.debug(f"{s['percentDiff']}, {s['name']}")
-        if type(s['percentDiff']) is not str:
-            plt.plot(i, s['percentDiff'], 'ro')
-            percents.append(s['percentDiff'])
+    if doPerc:
+        sData.sort(key=lambda x: -float('inf')
+                   if type(x['percentDiff']) is str else x['percentDiff'], reverse=True)
+        inData = [{'data': x['percentDiff'], 'name': x['name']}
+                  for x in sData if type(x['percentDiff']) is not str]
+        plt.ylim(-1, 1)
+    else:
+        sData.sort(key=lambda x: abs(
+            x['medians'][0] - x['medians'][1]), reverse=True)
+        inData = [{'data': abs(x['medians'][0] - x['medians'][1]),
+                   'name': x['name']} for x in sData]
 
-    meanPerc = sum(percents) / len(percents)
-    medianPerc = percents[len(percents)//2]
-    logger.info(f'mean:{meanPerc}')
-    logger.info(f'median:{medianPerc}')
+    outData = []
+    for i, s in enumerate(inData):
+        logger.debug(f"{s['data']}, {s['name']}")
+        plt.plot(i, s['data'], 'ro')
+        outData.append(s['data'])
 
-    plt.plot(range(len(percents)), [meanPerc] * len(percents), lw=3)
-    plt.plot(range(len(percents)), [medianPerc] * len(percents), lw=3)
-    plt.ylim(-1, 1)
+    mean = sum(outData) / len(outData)
+    median = outData[len(outData)//2]
+    logger.info(f'mean:{mean}')
+    logger.info(f'median:{median}')
+
+    plt.plot(range(len(outData)), [mean] * len(outData), lw=3)
+    plt.plot(range(len(outData)), [median] * len(outData), lw=3)
 
 
 # Setup Arg options
@@ -128,8 +146,10 @@ parser = OptionParser()
 parser.add_option('-n', dest='useN', default=False,
                   action='store_true', help='use newtons')
 parser.add_option('-s', dest='stu', help='Name of student')
-parser.add_option('-m', dest='doPerc', default=False,
+parser.add_option('-d', dest='doDiff', default=False,
                   action='store_true', help='Plot percentages including mean, median instead')
+parser.add_option('-R', dest='doPerc', default=True,
+                  action='store_false', help='Plot actual differences instead of percentages (must use -d)')
 parser.add_option('-P', dest='doPlot', default=True,
                   action='store_false', help='Do not show plot')
 
@@ -139,8 +159,8 @@ stu = options.stu
 USE_NEWTONS = options.useN
 
 # Run funcs
-if options.doPerc:
-    plotPercentages()
+if options.doDiff:
+    plotDifferences(options.doPerc)
 elif stu in students:
     plotStu(stu)
 else:
