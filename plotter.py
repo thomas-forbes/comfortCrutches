@@ -1,3 +1,4 @@
+from click.decorators import option
 import matplotlib.pyplot as plt
 import numpy as np
 import logging
@@ -12,6 +13,7 @@ logger.setLevel(logging.DEBUG)
 
 groups = ['tuesday']
 subSets = ['ours', 'notours']
+subSetColours = ['blue', 'red']
 
 interval = 0.5
 
@@ -42,11 +44,6 @@ def convertToN(data):
         return [(a*x+b)*9.8 for x in data if x > -1 and x < zNinOhms]
     else:
         return [x for x in data if x > -1 and x < zNinOhms]
-
-
-# USE_NEWTONS = True
-# print(convertToN([24.87, 12.96]))
-# exit(0)
 
 
 def getStudentData(stu):
@@ -92,13 +89,15 @@ def getStudentsData():
 def plotStu(stu):
     data = getStudentData(stu)
 
-    for s in subSets:
-        plt.plot(np.arange(0, len(data[s])*interval, interval), data[s])
+    for s, c in zip(subSets, subSetColours):
+        plt.plot(np.arange(0, len(data[s]) *
+                           interval, interval), data[s], color=c)
     logger.info(data['medians'])
     logger.info(data['percentDiff'])
 
+    subToNum = {'fran': 1, 'emily': 2}
     plt.xlabel('Seconds')
-    plt.title(f'Subject {stu}')
+    plt.title(f'Subject {subToNum[stu]}')
     plt.legend(['Comfort Crutch',
                 'Control'])
 
@@ -123,7 +122,7 @@ def plotDifferences(doPerc):
     else:
         sData.sort(key=lambda x: abs(
             x['medians'][0] - x['medians'][1]), reverse=True)
-        inData = [{'data': abs(x['medians'][0] - x['medians'][1]),
+        inData = [{'data': round(abs(x['medians'][0] - x['medians'][1]), 2),
                    'name': x['name']} for x in sData]
 
     outData = []
@@ -152,7 +151,8 @@ parser.add_option('-R', dest='doPerc', default=True,
                   action='store_false', help='Plot actual differences instead of percentages (must use -d)')
 parser.add_option('-P', dest='doPlot', default=True,
                   action='store_false', help='Do not show plot')
-
+parser.add_option('--download', dest='download', default=False,
+                  action='store_true', help='Downloads student graph or all')
 # Check options
 (options, args) = parser.parse_args()
 stu = options.stu
@@ -163,9 +163,16 @@ if options.doDiff:
     plotDifferences(options.doPerc)
 elif stu in students:
     plotStu(stu)
+    if options.download:
+        plt.savefig(f'./images/final/{stu}.jpg')
+        options.doPlot = False
 else:
     parser.print_help()
 
+# Bash command to download certain students
+# for s in stu1 ... stuN; do python3 plotter.py -s $s --download; done
+
+# fran emily
 
 if options.doPlot:
     plt.show()
