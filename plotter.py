@@ -105,7 +105,7 @@ def plotStu(stu):
                 'Control'])
 
     if USE_PASCALS:
-        plt.ylabel('Pascals')
+        plt.ylabel('Kilopascal')
         plt.ylim(-1, convertToPascals([0])[0])
     else:
         plt.ylabel('Resistance')
@@ -146,7 +146,7 @@ def plotDifferences(doPerc):
 # Setup Arg options
 parser = OptionParser()
 parser.add_option('-p', dest='usePascals', default=False,
-                  action='store_true', help='use pascals')
+                  action='store_true', help='use pascals. Uses KPa')
 parser.add_option('-s', dest='stu', help='Name of student')
 parser.add_option('-d', dest='doDiff', default=False,
                   action='store_true', help='Plot percentages including mean, median instead')
@@ -160,7 +160,7 @@ parser.add_option('--download', dest='download', default=False,
 (options, args) = parser.parse_args()
 stu = options.stu
 USE_PASCALS = options.usePascals
-SENSOR_AREA = 1  # m^2
+SENSOR_AREA = 0.14  # n/mm^2 = MPa. We are getting KPa
 
 # Run funcs
 if options.doDiff:
