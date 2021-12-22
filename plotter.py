@@ -118,7 +118,7 @@ def plotDifferences(doPerc):
                    if type(x['percentDiff']) is str else x['percentDiff'], reverse=True)
         inData = [{'data': x['percentDiff'], 'name': x['name']}
                   for x in sData if type(x['percentDiff']) is not str]
-        plt.ylim(-1, 1)
+        # plt.ylim(-1, 1)
     else:
         sData.sort(key=lambda x: abs(
             x['medians'][0] - x['medians'][1]), reverse=True)
@@ -152,7 +152,7 @@ parser.add_option('-R', dest='doPerc', default=True,
 parser.add_option('-P', dest='doPlot', default=True,
                   action='store_false', help='Do not show plot')
 parser.add_option('--download', dest='download', default=False,
-                  action='store_true', help='Downloads student graph or all')
+                  action='store_true', help='Downloads the graph that would be shown')
 # Check options
 (options, args) = parser.parse_args()
 stu = options.stu
@@ -163,12 +163,15 @@ if options.doDiff:
     plotDifferences(options.doPerc)
 elif stu in students:
     plotStu(stu)
-    if options.download:
-        plt.savefig(f'./images/final/{stu}.jpg')
-        options.doPlot = False
 else:
     parser.print_help()
 
+if options.download:
+    if stu != None:
+        plt.savefig(f'./images/final/{stu}.jpg')
+    else:
+        plt.savefig(f'./images/final/differences.jpg')
+    options.doPlot = False
 # Bash command to download certain students
 # for s in stu1 ... stuN; do python3 plotter.py -s $s --download; done
 
