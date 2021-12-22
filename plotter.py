@@ -105,7 +105,7 @@ def plotStu(stu):
                 'Control'])
 
     if USE_PASCALS:
-        plt.ylabel('Kilopascal')
+        plt.ylabel('Kilopascals')
         plt.ylim(-1, convertToPascals([0])[0])
     else:
         plt.ylabel('Resistance')
