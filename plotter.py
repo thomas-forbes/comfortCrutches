@@ -33,14 +33,24 @@ students = [s for s in students if s not in ignoredStudents]
 
 
 def convertToPascals(data):
-    ohms = np.array([120, 108, 95, 83, 70.5, 58.1,
-                     45.7, 33.3, 20.9, 8.5, -3.9])
-    kg = np.array([1.5, 2.5, 3.5, 4.5, 5.5, 6.5,
-                   7.5, 8.5, 9.5, 10.5, 11.5])
+    # This are the reading vedh gave me
+    # They plot linearly for this range
+    ohms = np.array([120, 108, 95, 83, 70.5])
+    kg = np.array([1.5, 2.5, 3.5, 4.5, 5.5])
 
+    # plt.plot(ohms, kg)
+
+    # Creates coefficients for a linear func in form kg=a*ohms+b
+    # its called line of best fit or fitting if you wanna search it up
     a, b = np.polyfit(ohms, kg, 1)
-    zNinOhms = -b/a  # Zero Newtons in ohms
+    # print(a, b)
+    zNinOhms = -b/a  # Finds the value in ohms for 0 newtons.
     if USE_PASCALS:
+        # a*x+b = kg then * 9.8 for newtons then /sensor_area for pascals
+
+        # I changed decimal point on sensor area so we get KPa. It should be 10^-3 more
+        # but if we take them off we get 10^3 on pascals which gives us kilopascals. kilo=1000
+        # also checks making sure value is within -1 0 newtons
         return [((a*x+b)*9.8)/SENSOR_AREA for x in data if x > -1 and x < zNinOhms]
     else:
         return [x for x in data if x > -1 and x < zNinOhms]
