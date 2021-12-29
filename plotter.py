@@ -139,8 +139,11 @@ def plotDifferences(doPerc):
     logger.info(f'mean:{mean}')
     logger.info(f'median:{median}')
 
-    plt.plot(range(len(outData)), [mean] * len(outData), lw=3)
-    plt.plot(range(len(outData)), [median] * len(outData), lw=3)
+    plt.plot(range(len(outData)), [mean] * len(outData), lw=2)
+    # plt.plot(range(len(outData)), [median] * len(outData), lw=3)
+    plt.title('Percentage Decreases')
+    plt.xlabel('Test Subject')
+    plt.ylabel('Percentage 0-1')
 
 
 # Setup Arg options
