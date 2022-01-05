@@ -1,3 +1,5 @@
+This was to mark the times in the files where people started this wasn't useful at all.
+
 First people (this is garbage)
 1: will testing
 2: Evie, ours
@@ -27,13 +29,13 @@ Third test
 Ours
 Hanna: 14:49:45
 Sophie: 14:50:23
-Zoe: 14:50:59 Tristan: 14:51:51
+Zoe: 14:50:59Tristan: 14:51:51
 Jack: 14:52:47
 Issy: 14:54:33
 
 Not ours
 Hanna 2: 14:55:53 (Was too high)
-Sophie 2: 14:58:21 Hanna 3: 14:59:05
+Sophie 2: 14:58:21Hanna 3: 14:59:05
 Zoe 2: 15:00:34
 Tristan 2: 15:01:01
 Jack 2: 15:01:23

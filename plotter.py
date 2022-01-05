@@ -23,22 +23,23 @@ for g in groups:
                  for x in os.listdir(f'./{g}/{subSets[0]}')]
 students.sort()
 
-# Ignored Reasons
-"""
-Connor: we did him again and different results after making the positioning better.
-August + Ruby: We did them before we noticed the positioning better and improved our instructions.
-"""
-ignoredStudents = ['august', 'connor', 'ruby']  # , 'maisieT', 'liamH', 'zoe']
+ignoredStudents = ['august', 'connor', 'ruby']
 students = [s for s in students if s not in ignoredStudents]
 
 
+# Takes and array of values in Ohms and returns it in pascals
 def convertToPascals(data):
     # This are the reading vedh gave me
     # They plot linearly for this range
     ohms = np.array([120, 108, 95, 83, 70.5])
     kg = np.array([1.5, 2.5, 3.5, 4.5, 5.5])
 
+    # Code for creating graph of ohms -> kg relationship
+    # plt.xlabel('Ohms')
+    # plt.ylabel('KG')
+    # plt.title('Sensor Calibration')
     # plt.plot(ohms, kg)
+    # plt.show()
 
     # Creates coefficients for a linear func in form kg=a*ohms+b
     # its called line of best fit or fitting if you wanna search it up
@@ -56,6 +57,7 @@ def convertToPascals(data):
         return [x for x in data if x > -1 and x < zNinOhms]
 
 
+# Returns dict with data for specified student with props: name, ours, notours, medians, and percentDiff
 def getStudentData(stu):
     out = {'name': stu, 'ours': [], 'notours': [], 'medians': [],
            'percentDiff': 'Not enough data for median'}
@@ -87,6 +89,7 @@ def getStudentData(stu):
     return out
 
 
+# Returns an array with data for all students
 def getStudentsData():
     sData = []
     for stu in students:
@@ -112,7 +115,7 @@ def plotStu(stu):
     except:
         plt.title(f'Subject {stu}')
     plt.legend(['Comfort Crutch',
-                'Control'])
+                'Standard Crutch'])
 
     if USE_PASCALS:
         plt.ylabel('Kilopascals')
@@ -137,6 +140,13 @@ def plotDifferences(doPerc):
             x['medians'][0] - x['medians'][1]), reverse=True)
         inData = [{'data': round(abs(x['medians'][0] - x['medians'][1]), 2),
                    'name': x['name']} for x in sData]
+        a, b = np.array([]), np.array([])
+        for i in sData:
+            # print(i['medians'], i['name'])
+            a = np.append(a, i['medians'][0])
+            b = np.append(b, i['medians'][1])
+        logger.info(
+            f'{np.average(a)}, {np.std(a)}, {np.average(b)}, {np.std(b)}')
 
     outData = []
     for i, s in enumerate(inData):
