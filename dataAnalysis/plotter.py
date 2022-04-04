@@ -1,3 +1,4 @@
+import json
 import matplotlib.pyplot as plt
 import numpy as np
 import logging
@@ -22,7 +23,7 @@ interval = 0.5
 students = []
 for g in groups:
     students += [x.split('.')[0]
-                 for x in os.listdir(f'./{g}/{subSets[0]}')]
+                 for x in os.listdir(f'./{os.path.dirname(__file__)}/{g}/{subSets[0]}')]
 students.sort()
 
 # Removes certain students from students array. August and ruby were before proper testing methods and connor we redid.
@@ -69,7 +70,7 @@ def getStudentData(stu):
     for s in subSets:
         for g in groups:
             # Finds student if file path exists
-            fileN = f'./{g}/{s}/{stu}.txt'
+            fileN = f'./{os.path.dirname(__file__)}/{g}/{s}/{stu}.txt'
             if os.path.exists(fileN):
                 # Gets data from txtToCsv.py
                 data = listify(fileN)
@@ -203,13 +204,18 @@ parser.add_option('--noPlot', dest='doPlot', default=True,
                   action='store_false', help='Do not show plot')
 parser.add_option('--download', dest='download', default=False,
                   action='store_true', help='Downloads the graph that would be shown')
-
+parser.add_option('--all-data-json', dest='allData',
+                  help='Returns json text', default=False, action='store_true')
 # Check options
 (options, args) = parser.parse_args()
 
 stu = options.stu
 USE_PASCALS = options.usePascals
 SENSOR_AREA = 0.14  # n/mm^2 = MPa. Sensor area = 1.4 * 10^-4 m^2. We are getting KPa
+
+if options.allData:
+    print(json.dumps(getStudentsData()))
+    exit(0)
 
 # Run funcs
 if options.doDiff:
@@ -222,9 +228,10 @@ else:
 # Will download image and place them into images/final
 if options.download:
     if stu != None:
-        plt.savefig(f'./images/final/{stu}.jpg')
+        plt.savefig(f'./{os.path.dirname(__file__)}/images/final/{stu}.jpg')
     else:
-        plt.savefig(f'./images/final/differences.jpg')
+        plt.savefig(
+            f'./{os.path.dirname(__file__)}/images/final/differences.jpg')
     options.doPlot = False
 
 # Bash command to download certain students

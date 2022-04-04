@@ -1,4 +1,5 @@
 import sys
+import os
 import csv
 
 
@@ -33,4 +34,4 @@ if __name__ == '__main__':
         writer.writerows(data)
         f.close()
 
-    print(f'Finished: ./{newN}')
+    print(f'Finished: {os.path.dirname(__file__)}/{newN}')
