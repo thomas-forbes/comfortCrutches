@@ -1,6 +1,6 @@
-# btysteTesting
+# Comfort Crutches
 
-This is the git repo with all the data for BTYSTE stand 2531.
+This is the git repo with all the data for the Comfort Crutches project.
 
 ## Usage
 
