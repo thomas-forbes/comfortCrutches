@@ -18,7 +18,6 @@
     "express": "^4.17.3",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "react-scripts": "5.0.0",
     "typescript": "^4.4.2",
     "web-vitals": "^2.1.0"
   },
@@ -47,6 +46,7 @@
     ]
   },
   "devDependencies": {
-    "@types/canvasjs": "^1.9.7"
+    "@types/canvasjs": "^1.9.7",
+    "react-scripts": "^5.0.1"
   }
 }
